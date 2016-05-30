@@ -33,7 +33,7 @@ for (package in package_list) {
 
 #####################################################################################
 # set year
-(year<-"2013")
+(year<-"2014")
 (yy<-substr(year,3,4))
 # here we do some reconnoitering to upload the `year` database
 # read in fixed width format using data from the PUByyD file
@@ -137,9 +137,15 @@ sqlQuery(stecher, dropquery )
 ################
 
 #check an anomaly in the results here. write your own queries of R statements depending on where the problem is
-sample(w.fixed.data$no_TOFC_COFC_units,10,replace=FALSE,prob=NULL)
-w.fixed.data$no_TOFC_COFC_units[600000:640100]
-#yes, they are different
+(s<-sample(w.fixed.data$idwaybillinput,10,replace=FALSE,prob=NULL))
+(c<-c("idwaybillinput",sample(columnnames,5,replace=FALSE,prob=NULL)))
+(w<-w.fixed.data[w.fixed.data$idwaybillinput %in% s,c])
+for (j in 1:length(s)) { if (j==1) {ss<-s[1]} else ss<-paste(ss,s[j],sep=",")}; ss
+for (j in 1:length(c)) { if (j==1) {cc<-c[1]} else cc<-paste(cc,c[j],sep=",")}; cc
+(samplequery<-paste("SELECT ",cc," from ",newtablename," WHERE idwaybillinput in (",ss,") order by idwaybillinput"))
+d<-sqlQuery(stecher, samplequery)
+w[1:nrow(w),]; d[1:nrow(d),]
+
 
 # dont do this till you are sure you are done with the data you read in, 
 # it manages memory so the space isn't huge
